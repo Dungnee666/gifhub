@@ -1,0 +1,122 @@
+<style>
+  .search-box {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 8px;
+    background: #fafafa;
+    font-family: Arial, sans-serif;
+    max-width: 100%;
+  }
+  .search-box h3 {
+    margin: 15px 0 8px;
+    font-size: 16px;
+    color: #333;
+  }
+  .search-box label {
+    display: inline-block;
+    margin-right: 15px;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  .search-box input[type="text"], .search-box select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .search-box button {
+    padding: 10px 20px;
+    background: #0073aa;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .search-box button:hover {
+    background: #005a87;
+  }
+</style>
+
+<div class="search-box">
+  <form onsubmit="return buildAdvancedSearch(this)">
+    <h3>Tình trạng</h3>
+    <label><input type="checkbox" name="tag" value="hoan-thanh"> Hoàn thành</label>
+    <label><input type="checkbox" name="tag" value="dang-tien-hanh"> Đang tiến hành</label>
+
+    <h3>Tính chất</h3>
+    <label><input type="checkbox" name="tag" value="ngot"> Ngọt</label>
+    <label><input type="checkbox" name="tag" value="nguoc"> Ngược</label>
+    <label><input type="checkbox" name="tag" value="he"> HE</label>
+    <label><input type="checkbox" name="tag" value="be"> BE</label>
+
+    <h3>Giới tính</h3>
+    <label><input type="checkbox" name="tag" value="dam-my"> Đam mỹ</label>
+    <label><input type="checkbox" name="tag" value="bach-hop"> Bách hợp</label>
+    <label><input type="checkbox" name="tag" value="nam-nu"> Nam - Nữ</label>
+
+    <h3>Thời đại</h3>
+    <label><input type="checkbox" name="tag" value="co-dai"> Cổ đại</label>
+    <label><input type="checkbox" name="tag" value="hien-dai"> Hiện đại</label>
+    <label><input type="checkbox" name="tag" value="tu-tien"> Tu tiên</label>
+
+    <h3>Độ dài chương</h3>
+    <select name="length">
+      <option value="">-- Chọn độ dài --</option>
+      <option value="0-20">0 - 20 chương</option>
+      <option value="21-50">21 - 50 chương</option>
+      <option value="51-100">51 - 100 chương</option>
+      <option value="101-200">101 - 200 chương</option>
+      <option value="201-500">201 - 500 chương</option>
+      <option value="501-1000">501 - 1000 chương</option>
+      <option value="1000+">Hơn 1000 chương</option>
+    </select>
+
+    <h3>Năm phát hành</h3>
+    <select name="year">
+      <option value="">-- Năm --</option>
+      <option>2025</option>
+      <option>2024</option>
+      <option>2023</option>
+      <option>2022</option>
+      <option>2021</option>
+    </select>
+
+    <h3>Chặn tag</h3>
+    <input type="text" name="notags" placeholder="VD: nguoc,nguyet-lau" />
+
+    <h3>Tìm kiếm từ khóa</h3>
+    <input type="text" name="s" placeholder="Tên truyện, tác giả..." />
+
+    <br>
+    <button type="submit">🔍 Tìm truyện</button>
+  </form>
+</div>
+
+<script>
+  function buildAdvancedSearch(form) {
+    const includeTags = Array.from(form.querySelectorAll('input[name="tag"]:checked')).map(cb => cb.value);
+    const excludeTags = form.notags.value.trim().toLowerCase().split(',').filter(Boolean);
+    const keyword = form.s.value.trim();
+    let url = "/";
+
+    if (includeTags.length > 0) {
+      url += "tag/" + includeTags.join("+");
+    }
+
+    let params = [];
+
+    if (keyword) params.push("s=" + encodeURIComponent(keyword));
+    if (excludeTags.length > 0) params.push("notags=" + excludeTags.join(","));
+    if (form.length.value) params.push("length=" + form.length.value);
+    if (form.year.value) params.push("year=" + form.year.value);
+
+    if (params.length > 0) {
+      url += (url.includes("?") ? "&" : "?") + params.join("&");
+    }
+
+    window.location.href = url;
+    return false;
+  }
+</script>
